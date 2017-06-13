@@ -1,0 +1,27 @@
+{
+    "name": "ddmytruk/yii2-user",
+    "description": "My yii2 test module",
+    "keywords": ["yii2", "yii2-user"],
+    "type": "yii2-extension",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dmytro Dmytruk",
+            "email": "d.dmytruk@icloud.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "yiisoft/yii2": "^2.0.0",
+        "yiisoft/yii2-swiftmailer": "^2.0.0"
+    },
+    "require-dev": {},
+    "autoload": {
+        "psr-4": {
+            "ddmytruk\\user\\": ""
+        }
+    },
+    "extra": {
+        "bootstrap": "ddmytruk\\user\\Bootstrap"
+    }
+}
