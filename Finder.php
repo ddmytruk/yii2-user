@@ -14,25 +14,5 @@ use yii\base\Object;
 
 class Finder extends Object
 {
-    /**
-     * @var SignUpAbstract
-     */
-    protected $signUpForm;
-
-    /**
-     * @return SignUpAbstract
-     */
-    public function getSignUpForm()
-    {
-        return $this->signUpForm;
-    }
-
-    /**
-     * @param SignUpAbstract $userQuery
-     */
-    public function setSignUpForm(SignUpAbstract $signUpForm)
-    {
-        $this->signUpForm = $signUpForm;
-    }
 
 }

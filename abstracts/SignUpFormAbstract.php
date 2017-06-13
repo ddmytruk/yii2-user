@@ -11,6 +11,6 @@ namespace ddmytruk\user\abstracts;
 
 use yii\base\Model;
 
-abstract class SignUpAbstract extends Model {
+abstract class SignUpFormAbstract extends Model {
 
 }
