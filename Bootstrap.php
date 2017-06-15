@@ -14,9 +14,8 @@ use yii\base\BootstrapInterface;
 class Bootstrap implements BootstrapInterface {
 
     private $_modelMap = [
-        'SignUpForm' => [
-            'class' => 'ddmytruk\user\models\form\SignUpForm'
-        ]
+        'SignUpForm' => 'ddmytruk\user\models\form\SignUpForm',
+        'User' => 'ddmytruk\user\models\orm\User',
     ];
 
     /**
@@ -29,8 +28,6 @@ class Bootstrap implements BootstrapInterface {
 
             foreach ($this->_modelMap as $name => $definition) {
 
-                #$class = str_replace("\\", "/", $definition);
-
                 $modelName = is_array($definition) ? $definition['class'] : $definition;
 
                 $module->modelMap[$name] = $modelName;
@@ -38,26 +35,19 @@ class Bootstrap implements BootstrapInterface {
                 Yii::$container->set($name, function () use ($modelName) {
                     return Yii::createObject($modelName);
                 });
-
-                #var_dump($class);
-                #var_dump($definition);
-//                var_dump($modelName);
-//                var_dump(Yii::$container->get('SignUpForm'));
-//                die;
-
             }
 
             Yii::$container->setSingleton(DI::className(), [
                 'signUpForm'    => Yii::$container->get('SignUpForm'),
+                'user' => Yii::$container->get('User')
             ]);
 
+            #Yii::$container->set('dektrium\user\Mailer', $module->mailer);
         }
 
     }
 
     private function setDefinition($definition) {
-
-
 
     }
 

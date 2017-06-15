@@ -37,6 +37,18 @@ class CommonController extends Controller
     {
         $this->finder = $finder;
         $this->di = $di;
+
+        foreach ($config as $name => $definition) {
+
+            if((substr_count($name, 'before') && !substr_count($name, 'on before'))
+                || substr_count($name, 'after') && !substr_count($name, 'on after')) {
+
+                $config['on '.$name] = $config[$name];
+                unset($config[$name]);
+            }
+        }
+
         parent::__construct($id, $module, $config);
     }
+
 }

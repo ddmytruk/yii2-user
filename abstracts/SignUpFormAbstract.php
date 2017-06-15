@@ -9,8 +9,28 @@
 namespace ddmytruk\user\abstracts;
 
 
+use ddmytruk\user\interfaces\FormInterface;
 use yii\base\Model;
 
-abstract class SignUpFormAbstract extends Model {
+abstract class SignUpFormAbstract extends Model implements FormInterface {
+
+    /**
+     * @var string User email address
+     */
+    public $email;
+
+    /**
+     * @var string Username
+     */
+    public $username;
+
+    /**
+     * @var string Password
+     */
+    public $password;
+
+    public function getViewPath() {
+        return false;
+    }
 
 }

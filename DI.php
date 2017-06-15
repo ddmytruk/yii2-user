@@ -10,6 +10,7 @@ namespace ddmytruk\user;
 
 
 use ddmytruk\user\abstracts\SignUpFormAbstract;
+use ddmytruk\user\abstracts\UserAbstract;
 use yii\base\Object;
 
 class DI extends Object
@@ -34,4 +35,26 @@ class DI extends Object
     {
         $this->signUpForm = $signUpForm;
     }
+
+    /**
+     * @var UserAbstract
+     */
+    protected $user;
+
+    /**
+     * @return UserAbstract
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * @param UserAbstract $sugnUpForm
+     */
+    public function setUser(UserAbstract $user)
+    {
+        $this->user = $user;
+    }
+
 }
