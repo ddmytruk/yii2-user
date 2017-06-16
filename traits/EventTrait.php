@@ -8,6 +8,8 @@
 
 namespace ddmytruk\user\traits;
 
+use ddmytruk\user\abstracts\UserAbstract;
+use ddmytruk\user\events\UserEvent;
 use Yii;
 use yii\base\Model;
 use ddmytruk\user\events\FormEvent;
@@ -22,5 +24,15 @@ trait EventTrait
     protected function getFormEvent(Model $form)
     {
         return Yii::createObject(['class' => FormEvent::className(), 'form' => $form]);
+    }
+
+    /**
+     * @param  UserAbstract $user
+     * @return object the created object (UserEvent or InvalidConfigException)
+     * @throws \yii\base\InvalidConfigException
+     */
+    protected function getUserEvent(UserAbstract $user)
+    {
+        return \Yii::createObject(['class' => UserEvent::className(), 'user' => $user]);
     }
 }

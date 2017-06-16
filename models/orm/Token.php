@@ -51,7 +51,7 @@ class Token extends \yii\db\ActiveRecord
     {
         switch ($this->type) {
             case self::TYPE_CONFIRMATION:
-                $route = '/user/registration/confirm';
+                $route = '/user/security/confirm';
                 break;
             default:
                 throw new \RuntimeException();
@@ -60,21 +60,25 @@ class Token extends \yii\db\ActiveRecord
         return Url::to([$route, 'id' => $this->user_id, 'code' => $this->code], true);
     }
 
-//    /**
-//     * @return bool Whether token has expired.
-//     */
-//    public function getIsExpired()
-//    {
-//        switch ($this->type) {
-//            case self::TYPE_CONFIRMATION:
-//                $expirationTime = $this->module->confirmWithin;
-//                break;
-//            default:
-//                throw new \RuntimeException();
-//        }
-//
-//        return ($this->created_at + $expirationTime) < time();
-//    }
+    /**
+     * @return bool Whether token has expired.
+     */
+    public function getIsExpired()
+    {
+        switch ($this->type) {
+            case self::TYPE_CONFIRMATION:
+                $expirationTime = 'PT'.$this->module->confirmWithin.'S';
+                break;
+            default:
+                throw new \RuntimeException();
+        }
+
+        $liveTime = new \DateTime($this->created_at);
+        $liveTime->add(new \DateInterval($expirationTime));
+        $now = new \DateTime();
+
+        return $liveTime < $now;
+    }
 
     /**
      * @inheritdoc

@@ -9,17 +9,19 @@
 namespace ddmytruk\user\models\orm;
 
 use ddmytruk\user\abstracts\UserAbstract;
-use yii\helpers\ArrayHelper;
+use ddmytruk\user\Finder;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
 use yii\web\Application as WebApplication;
 use ddmytruk\user\helpers\Password;
+use ddmytruk\user\Mailer;
 
 /**
  * This is the model class for table "user".
  *
  * @property integer $id
+ * @property integer $status
  * @property string $username
  * @property string $email
  * @property string $password_hash
@@ -35,23 +37,37 @@ use ddmytruk\user\helpers\Password;
 
 class User extends UserAbstract
 {
+    const STATUS_CONFIRMED = 10;
+    const STATUS_BLOCKED = 1;
+    const STATUS_UN_CONFIRMED = 0;
+
     const BEFORE_SIGN_UP = 'beforeSignUp';
     const AFTER_SIGN_UP  = 'afterSignUp';
+
+    const BEFORE_CONFIRM  = 'beforeConfirm';
+    const AFTER_CONFIRM   = 'afterConfirm';
     /**
      * @var string username regexp
      */
     public static $usernameRegexp = '/^[-a-zA-Z]+$/';
 
-    public $password;
+    /**
+     * @return object an instance of the requested class. (Mailer)
+     * @throws \yii\base\InvalidConfigException
+     */
+    protected function getMailer()
+    {
+        return \Yii::$container->get(Mailer::className());
+    }
 
-//    /**
-//     * @return object an instance of the requested class. (Mailer)
-//     * @throws \yii\base\InvalidConfigException
-//     */
-//    protected function getMailer()
-//    {
-//        return \Yii::$container->get(Mailer::className());
-//    }
+    /**
+     * @return object an instance of the requested class.(Finder)
+     * @throws \yii\base\InvalidConfigException
+     */
+    protected function getFinder()
+    {
+        return \Yii::$container->get(Finder::className());
+    }
 
     /**
      * @inheritdoc
@@ -83,6 +99,8 @@ class User extends UserAbstract
 
 
             'roleLength' => ['role', 'integer'],
+
+            'statusLenght' => ['status', 'integer'],
         ];
 
         $rules = array_merge($rules, static::rulesForForm());
@@ -188,7 +206,8 @@ class User extends UserAbstract
             $token = \Yii::createObject(['class' => Token::className(), 'type' => Token::TYPE_CONFIRMATION]);
             $token->link('user', $this);
 
-            #$this->mailer->sendWelcomeMessage($this, isset($token) ? $token : null);
+            $this->mailer->sendWelcomeMessage($this, isset($token) ? $token : null);
+
             $this->trigger(self::AFTER_SIGN_UP);
 
             $transaction->commit();
@@ -237,6 +256,56 @@ class User extends UserAbstract
                 'value' => new Expression('NOW()'),
             ],
         ];
+    }
+
+    /**
+     * @return bool Whether the user is confirmed or not.
+     */
+    public function getIsConfirmed()
+    {
+        return $this->status == static::STATUS_CONFIRMED;
+    }
+
+    /**
+     * @return bool Whether the user is blocked or not.
+     */
+    public function getIsBlocked()
+    {
+        return $this->status == static::STATUS_BLOCKED;
+    }
+
+    /**
+     * Attempts user confirmation.
+     *
+     * @param string $code Confirmation code.
+     *
+     * @return boolean
+     */
+    public function attemptConfirmation($code)
+    {
+        $token = $this->finder->findTokenByParams($this->id, $code, Token::TYPE_CONFIRMATION);
+
+        if ($token instanceof Token && !$token->isExpired) {
+            $token->delete();
+            if (($success = $this->confirm())) {
+                \Yii::$app->user->login($this, $this->module->rememberFor);
+            }
+        } else {
+            $success = false;
+        }
+
+        return $success;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function confirm()
+    {
+        $this->trigger(self::BEFORE_CONFIRM);
+        $result = (bool) $this->updateAttributes(['status' => static::STATUS_CONFIRMED]);
+        $this->trigger(self::AFTER_CONFIRM);
+        return $result;
     }
 
     /**

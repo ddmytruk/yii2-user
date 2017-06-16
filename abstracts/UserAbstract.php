@@ -19,6 +19,17 @@ abstract class UserAbstract extends ActiveRecord implements IdentityInterface, O
     const SCENARIO_SIGN_UP_USERNAME = 'signUpUsername';
     const SCENARIO_SIGN_UP_EMAIL_AND_USERNAME = 'signUpEmailAndUsername';
 
+    public $password;
+
+    /**
+     * Attempts user confirmation.
+     *
+     * @param string $code Confirmation code.
+     *
+     * @return boolean
+     */
+    abstract public function attemptConfirmation($code);
+
     /**
      * @inheritdoc
      */

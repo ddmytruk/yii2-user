@@ -16,6 +16,7 @@ class Bootstrap implements BootstrapInterface {
     private $_modelMap = [
         'SignUpForm' => 'ddmytruk\user\models\form\SignUpForm',
         'User' => 'ddmytruk\user\models\orm\User',
+        'Token' => 'ddmytruk\user\models\orm\Token'
     ];
 
     /**
@@ -35,6 +36,14 @@ class Bootstrap implements BootstrapInterface {
                 Yii::$container->set($name, function () use ($modelName) {
                     return Yii::createObject($modelName);
                 });
+
+                if (in_array($name, ['User', 'Token'])) {
+
+                    Yii::$container->set($name . 'Query', function () use ($modelName) {
+                        return $modelName::find();
+                    });
+
+                }
             }
 
             Yii::$container->setSingleton(DI::className(), [
@@ -42,7 +51,12 @@ class Bootstrap implements BootstrapInterface {
                 'user' => Yii::$container->get('User')
             ]);
 
-            #Yii::$container->set('dektrium\user\Mailer', $module->mailer);
+            Yii::$container->setSingleton(Finder::className(), [
+                'userQuery'    => Yii::$container->get('UserQuery'),
+                'tokenQuery'   => Yii::$container->get('TokenQuery'),
+            ]);
+
+            Yii::$container->set('ddmytruk\user\Mailer', $module->mailer);
         }
 
     }
