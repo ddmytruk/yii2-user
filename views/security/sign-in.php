@@ -5,12 +5,11 @@ use yii\widgets\ActiveForm;
 
 /**
  * @var yii\web\View $this
- * @var \ddmytruk\user\abstracts\SignUpFormAbstract $model
+ * @var \ddmytruk\user\abstracts\SignInFormAbstract $model
  */
 
-$this->title = 'Sign up';
+$this->title = 'Sign in';
 $this->params['breadcrumbs'][] = $this->title;
-
 ?>
 
 <div class="row">
@@ -18,16 +17,15 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="col-md-4 col-md-offset-4">
 
         <?php $form = ActiveForm::begin([
-            'id' => 'registration-form',
+            'id' => 'login-form',
             'enableAjaxValidation' => true,
             'enableClientValidation' => false,
-        ]); ?>
+            'validateOnBlur' => false,
+            'validateOnType' => false,
+            'validateOnChange' => false,
+        ]) ?>
 
-        <?= $form->field($model, 'email') ?>
-
-        <?= $form->field($model, 'phone') ?>
-
-        <?= $form->field($model, 'username') ?>
+        <?= $form->field($model, 'login') ?>
 
         <?= $form->field($model, 'password')->passwordInput() ?>
 
@@ -38,3 +36,5 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 
 </div>
+
+

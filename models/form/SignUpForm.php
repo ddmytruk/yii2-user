@@ -18,6 +18,7 @@ use yii\helpers\ArrayHelper;
 class SignUpForm extends SignUpFormAbstract
 {
     use ModuleTrait;
+
     /**
      * @inheritdoc
      */
@@ -26,10 +27,15 @@ class SignUpForm extends SignUpFormAbstract
         /** @var $user UserAbstract */
         $user = $this->module->modelMap['User'];
 
-        return $user::rulesForForm();
+        $user::setScenarioConfig($this->module->signUpScenarioConfig);
+
+        return $user::rulesForForm(SignUpFormAbstract::className(), $user::SIGN_UP_SCENARIO);
 
     }
 
+    /**
+     * @inheritdoc
+     */
     public function scenarios()
     {
         /** @var $user UserAbstract */

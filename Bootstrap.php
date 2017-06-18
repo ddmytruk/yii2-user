@@ -15,6 +15,7 @@ class Bootstrap implements BootstrapInterface {
 
     private $_modelMap = [
         'SignUpForm' => 'ddmytruk\user\models\form\SignUpForm',
+        'SignInForm' => 'ddmytruk\user\models\form\SignInForm',
         'User' => 'ddmytruk\user\models\orm\User',
         'Token' => 'ddmytruk\user\models\orm\Token'
     ];
@@ -48,6 +49,7 @@ class Bootstrap implements BootstrapInterface {
 
             Yii::$container->setSingleton(DI::className(), [
                 'signUpForm'    => Yii::$container->get('SignUpForm'),
+                'signInForm'    => Yii::$container->get('SignInForm'),
                 'user' => Yii::$container->get('User')
             ]);
 

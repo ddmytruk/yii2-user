@@ -102,6 +102,42 @@ class Finder extends Object
     }
 
     /**
+     * Finds a user by the given username.
+     *
+     * @param string $username Username to be used on search.
+     *
+     * @return ActiveRecord
+     */
+    public function findUserByUsername($username)
+    {
+        return $this->findUser(['username' => $username])->one();
+    }
+
+    /**
+     * Finds a user by the given email.
+     *
+     * @param string $email Email to be used on search.
+     *
+     * @return ActiveRecord
+     */
+    public function findUserByEmail($email)
+    {
+        return $this->findUser(['email' => $email])->one();
+    }
+
+    /**
+     * Finds a user by the given email.
+     *
+     * @param string $phone Phone to be used on search.
+     *
+     * @return ActiveRecord
+     */
+    public function findUserByPhone($phone)
+    {
+        return $this->findUser(['phone' => $phone])->one();
+    }
+
+    /**
      * Finds a user by the given condition.
      *
      * @param mixed $condition Condition to be used on search.

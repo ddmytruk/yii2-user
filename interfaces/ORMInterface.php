@@ -13,8 +13,9 @@ interface ORMInterface
 
     /**
      * @inheritdoc
+     * @param string $scenario the scenario that this model is in.
      */
-    public static function rulesForForm();
+    public static function rulesForForm($className, $scenario);
 
     /**
      * @inheritdoc

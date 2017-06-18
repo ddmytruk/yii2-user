@@ -17,7 +17,16 @@ class Module extends BaseModule
     const VERSION = '0.0.0'; /* На донышке */
 
     /** Default sign up scenario for set required username and email */
-    public $signUpScenario = UserAbstract::SCENARIO_SIGN_UP_EMAIL_AND_USERNAME;
+    public $signUpScenarioConfig = [
+        UserAbstract::SIGN_UP_EMAIL,
+        UserAbstract::SIGN_UP_PHONE,
+        UserAbstract::SIGN_UP_USERNAME
+    ];
+
+    /** Default sign in scenario for set required email */
+    public $signInScenarioConfig = [
+        #UserAbstract::SCENARIO_SIGN_IN_EMAIL,
+    ];
 
     /** @var int Cost parameter used by the Blowfish hash algorithm. */
     public $cost = 10;

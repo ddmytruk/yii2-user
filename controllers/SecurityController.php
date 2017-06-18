@@ -13,6 +13,7 @@ use ddmytruk\user\abstracts\SignUpFormAbstract;
 use ddmytruk\user\abstracts\UserAbstract;
 use ddmytruk\user\traits\EventTrait;
 use yii\web\NotFoundHttpException;
+use yii\web\Response;
 
 use ddmytruk\user\components\CommonController;
 
@@ -58,18 +59,25 @@ class SecurityController extends CommonController
     const EVENT_AFTER_CONFIRM = 'afterConfirm';
 
 
-    public function actionSignIn() {
+    public function actionSignUp() {
 
         /** @var $model SignUpFormAbstract */
         $model = $this->di->getSignUpForm();
 
+        /** @var $user UserAbstract */
+        $user = $this->module->modelMap['User'];
+
+        $model->setScenario($user::SIGN_UP_SCENARIO);
+
+        #$this->layout = false;
+//        var_dump($model->rules());
+//        var_dump($model->getScenario());
+//        die;
         $event = $this->getFormEvent($model);
 
-        $this->trigger(self::EVENT_BEFORE_SIGN_UP, $event);
-
-        $model->setScenario($this->module->signUpScenario);
-
         $this->performAjaxValidation($model);
+
+        $this->trigger(self::EVENT_BEFORE_SIGN_UP, $event);
 
         if ($model->load(\Yii::$app->request->post()) && $model->perform()) {
 
@@ -86,6 +94,40 @@ class SecurityController extends CommonController
     }
 
     /**
+     * Displays the sign in page.
+     *
+     * @return string|Response
+     */
+    public function actionSignIn() {
+
+        if (!\Yii::$app->user->isGuest)
+            $this->goHome();
+
+        /** @var $model SignUpFormAbstract */
+        $model = $this->di->getSignInForm();
+        #$model->setScenario($this->module->signInScenario);
+        $event = $this->getFormEvent($model);
+
+        $this->performAjaxValidation($model);
+
+        $this->trigger(self::EVENT_BEFORE_SIGN_IN, $event);
+
+        if ($model->load(\Yii::$app->getRequest()->post()) && $model->perform()) {
+
+            $this->trigger(self::EVENT_AFTER_SIGN_IN, $event);
+            return $this->goBack();
+
+        }
+
+        $view = $model->getViewPath() ? $model->getViewPath() : 'sign-in';
+
+        return $this->render($view, [
+            'model'  => $model,
+        ]);
+
+    }
+
+    /**
      * Confirms user's account. If confirmation was successful logs the user and shows success message. Otherwise
      * shows error message.
      *
@@ -93,8 +135,8 @@ class SecurityController extends CommonController
      * @param string $code
      * @throws \yii\web\HttpException
      */
-    public function actionConfirm($id, $code)
-    {
+    public function actionConfirm($id, $code) {
+
         /** @var $user UserAbstract */
         $user = $this->finder->findUserById($id);
 
@@ -115,5 +157,6 @@ class SecurityController extends CommonController
         return $this->render('/message', [
             'title'  => 'Account confirmation',
         ]);
+
     }
 }

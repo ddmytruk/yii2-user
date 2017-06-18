@@ -8,8 +8,11 @@
 
 namespace ddmytruk\user\models\orm;
 
+use ddmytruk\user\abstracts\SignInFormAbstract;
+use ddmytruk\user\abstracts\SignUpFormAbstract;
 use ddmytruk\user\abstracts\UserAbstract;
 use ddmytruk\user\Finder;
+use ddmytruk\user\traits\ModuleTrait;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
@@ -23,6 +26,7 @@ use ddmytruk\user\Mailer;
  * @property integer $id
  * @property integer $status
  * @property string $username
+ * @property string $phone
  * @property string $email
  * @property string $password_hash
  * @property string $auth_key
@@ -37,6 +41,8 @@ use ddmytruk\user\Mailer;
 
 class User extends UserAbstract
 {
+    use ModuleTrait;
+
     const STATUS_CONFIRMED = 10;
     const STATUS_BLOCKED = 1;
     const STATUS_UN_CONFIRMED = 0;
@@ -46,10 +52,16 @@ class User extends UserAbstract
 
     const BEFORE_CONFIRM  = 'beforeConfirm';
     const AFTER_CONFIRM   = 'afterConfirm';
+
     /**
      * @var string username regexp
      */
     public static $usernameRegexp = '/^[-a-zA-Z]+$/';
+
+    /**
+     * @var string phone regexp
+     */
+    public static $phoneRegexp = '/^(\d{12})$/';
 
     /**
      * @return object an instance of the requested class. (Mailer)
@@ -103,7 +115,7 @@ class User extends UserAbstract
             'statusLenght' => ['status', 'integer'],
         ];
 
-        $rules = array_merge($rules, static::rulesForForm());
+        #$rules = array_merge($rules, static::rulesForForm());
 
         return $rules;
 
@@ -116,55 +128,146 @@ class User extends UserAbstract
         return static::getScenarios();
     }
 
+    private static function getRulesConfigForAttribute($attribute, $scenario)
+    {
+        $result = static::SCENARIO_DEFAULT;
+
+        switch ($attribute) {
+            case 'username':
+                if(in_array(static::SIGN_UP_USERNAME,  static::$scenarioConfig))
+                    return $scenario;
+                break;
+
+            case 'email':
+                if(in_array(static::SIGN_UP_EMAIL,  static::$scenarioConfig))
+                    return $scenario;
+                break;
+
+            case 'phone':
+                if(in_array(static::SIGN_UP_PHONE,  static::$scenarioConfig))
+                    return $scenario;
+                break;
+
+            default:
+                return static::SCENARIO_DEFAULT;
+        }
+
+        return $result;
+    }
+
+    public static function getRulesConfigForAttributes()
+    {
+        $result = [];
+
+        if(in_array(static::SIGN_UP_USERNAME,  static::$scenarioConfig))
+            $result[static::SIGN_UP_SCENARIO][] = 'username';
+        if(in_array(static::SIGN_UP_EMAIL,  static::$scenarioConfig))
+            $result[static::SIGN_UP_SCENARIO][] = 'email';
+        if(in_array(static::SIGN_UP_PHONE,  static::$scenarioConfig))
+            $result[static::SIGN_UP_SCENARIO][] = 'phone';
+
+        $result[static::SIGN_UP_SCENARIO][] = 'password';
+
+        return $result;
+    }
+
     public static function getScenarios() {
-
-        return [
-            static::SCENARIO_SIGN_UP_EMAIL => ['email', 'password'],
-            static::SCENARIO_SIGN_UP_USERNAME => ['username', 'password'],
-            static::SCENARIO_SIGN_UP_EMAIL_AND_USERNAME => ['username', 'email', 'password']
-        ];
-
+        return static::getRulesConfigForAttributes();
     }
 
     /**
      * @inheritdoc
+     * @param string $scenario the scenario that this model is in.
      */
-    public static function rulesForForm() {
+    public static function rulesForForm($className, $scenario) {
 
-        $rules = [
-            'usernameRequired' => ['username', 'required', 'on' => [
-                static::SCENARIO_SIGN_UP_USERNAME, static::SCENARIO_SIGN_UP_EMAIL_AND_USERNAME
-            ]],
-            'usernameMatch'    => ['username', 'match', 'pattern' => static::$usernameRegexp],
-            'usernameLength'   => ['username', 'string', 'min' => 3, 'max' => 25],
-            'usernameUnique'   => [
-                'username',
-                'unique',
-                'targetClass' => get_class(),
-                'message' => 'This username has already been taken'
-            ],
-            'usernameTrim'     => ['username', 'trim'],
+        if($className == SignUpFormAbstract::className()) {
 
-
-            'emailRequired' => ['email', 'required', 'on' => [
-                static::SCENARIO_SIGN_UP_EMAIL, static::SCENARIO_SIGN_UP_EMAIL_AND_USERNAME
-            ]],
-            'emailPattern'  => ['email', 'email'],
-            'emailLength'   => ['email', 'string', 'max' => 255],
-            'emailUnique'   => [
-                'email',
-                'unique',
-                'targetClass' => get_class(),
-                'message' => 'This email address has already been taken'
-            ],
-            'emailTrim'     => ['email', 'trim'],
+            $result = [
+                'usernameRequired' => [
+                    'username', 'required', 'on' =>
+                        static::getRulesConfigForAttribute('username', $scenario)
+                ],
+                'usernameMatch'    => [
+                    'username', 'match', 'pattern' => static::$usernameRegexp, 'on' =>
+                        static::getRulesConfigForAttribute('username', $scenario)
+                ],
+                'usernameLength'   => [
+                    'username', 'string', 'min' => 3, 'max' => 25, 'on' =>
+                        static::getRulesConfigForAttribute('username', $scenario)
+                ],
+                'usernameUnique'   => [
+                    'username',
+                    'unique',
+                    'targetClass' => get_class(),
+                    'message' => 'This username has already been taken',
+                    'on' => static::getRulesConfigForAttribute('username', $scenario)
+                ],
+                'usernameTrim'     => ['username', 'trim', 'on' =>
+                    static::getRulesConfigForAttribute('username', $scenario)
+                ],
 
 
-            'passwordRequired' => ['password', 'required'],
-            'passwordLength'   => ['password', 'string', 'min' => 6, 'max' => 72],
-        ];
+                'emailRequired' => [
+                    'email', 'required', 'on' =>
+                        static::getRulesConfigForAttribute('email', $scenario)
+                ],
+                'emailPattern'  => [
+                    'email', 'email', 'on' =>
+                        static::getRulesConfigForAttribute('email', $scenario)
+                ],
+                'emailLength'   => [
+                    'email', 'string', 'max' => 255, 'on' =>
+                        static::getRulesConfigForAttribute('email', $scenario)
+                ],
+                'emailUnique'   => [
+                    'email',
+                    'unique',
+                    'targetClass' => get_class(),
+                    'message' => 'This email address has already been taken',
+                    'on' => static::getRulesConfigForAttribute('email', $scenario)
+                ],
+                'emailTrim'     => ['email', 'trim', 'on' =>
+                    static::getRulesConfigForAttribute('email', $scenario)
+                ],
 
-        return $rules;
+
+                'phoneRequired' => [
+                    'phone', 'required', 'on' =>
+                        static::getRulesConfigForAttribute('phone', $scenario)
+                ],
+                'phoneMatch'    => [
+                    'phone', 'match', 'pattern' => static::$phoneRegexp, 'on' =>
+                        static::getRulesConfigForAttribute('phone', $scenario)
+                ],
+                'phoneUnique'   => [
+                    'phone',
+                    'unique',
+                    'targetClass' => get_class(),
+                    'message' => 'This phone has already been taken',
+                    'on' => static::getRulesConfigForAttribute('phone', $scenario)
+                ],
+                'phoneTrim'     => ['phone', 'trim', 'on' =>
+                    static::getRulesConfigForAttribute('phone', $scenario)
+                ],
+
+
+                'passwordRequired' => ['password', 'required', 'on' => $scenario],
+                'passwordLength'   => ['password', 'string', 'min' => 6, 'max' => 72, 'on' => $scenario],
+            ];
+
+        } elseif ($className == SignInFormAbstract::className()) {
+
+            #var_dump($this->module->signInScenario);
+
+            $result = [
+
+
+                'rememberMe' => ['rememberMe', 'boolean'],
+            ];
+        }
+
+        return isset($result) ? $result : [];
 
     }
 

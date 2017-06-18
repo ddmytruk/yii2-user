@@ -15,11 +15,33 @@ use yii\base\NotSupportedException;
 
 abstract class UserAbstract extends ActiveRecord implements IdentityInterface, ORMInterface
 {
-    const SCENARIO_SIGN_UP_EMAIL = 'signUpEmail';
-    const SCENARIO_SIGN_UP_USERNAME = 'signUpUsername';
-    const SCENARIO_SIGN_UP_EMAIL_AND_USERNAME = 'signUpEmailAndUsername';
+
+    const SIGN_UP_SCENARIO = 'singUp';
+    const SIGN_IN_SCENARIO = 'singIn';
+
+    const SIGN_UP_EMAIL = 'signUpEmail';
+    const SIGN_UP_USERNAME = 'signUpUsername';
+    const SIGN_UP_PHONE = 'signUpPhone';
+    #const SIGN_UP_EMAIL_AND_USERNAME = 'signUpEmailAndUsername';
+
+    const SIGN_IN_EMAIL = 'signInEmail';
+    const SIGN_IN_USERNAME = 'signInUsername';
+    const SIGN_IN_PHONE = 'signInUsername';
 
     public $password;
+
+    /**
+     * @var string[] scenario config array
+     */
+    public static $scenarioConfig;
+
+    /**
+     * @param string[] $value scenario config array.
+     */
+    public static function setScenarioConfig($value)
+    {
+        static::$scenarioConfig = $value;
+    }
 
     /**
      * Attempts user confirmation.

@@ -25,6 +25,11 @@ abstract class SignUpFormAbstract extends Model implements FormInterface {
     public $username;
 
     /**
+     * @var string Phone
+     */
+    public $phone;
+
+    /**
      * @var string Password
      */
     public $password;
