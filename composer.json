@@ -14,6 +14,7 @@
     "require": {
         "yiisoft/yii2": "^2.0.0",
         "yiisoft/yii2-swiftmailer": "^2.0.0",
+        "yiisoft/yii2-authclient": "^2.1.0",
         "ddmytruk/yii2-core": "@dev",
         "ddmytruk/yii2-mailer": "@dev"
     },

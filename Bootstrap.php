@@ -66,9 +66,6 @@ class Bootstrap implements BootstrapInterface {
                 ];
             }
 
-//            var_dump($app->get('i18n'));
-//            die;
-
             Yii::$container->set('ddmytruk\user\Mailer', $module->mailer);
         }
 
