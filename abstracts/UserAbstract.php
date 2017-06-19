@@ -28,6 +28,21 @@ abstract class UserAbstract extends ActiveRecord implements IdentityInterface, O
     const SIGN_IN_USERNAME = 'signInUsername';
     const SIGN_IN_PHONE = 'signInUsername';
 
+
+    const STATUS_CONFIRMED = 10;
+    const STATUS_BLOCKED = 1;
+    const STATUS_UN_CONFIRMED = 0;
+
+    /**
+     * @var string username regexp
+     */
+    public static $usernameRegexp = '/^[-a-zA-Z]+$/';
+
+    /**
+     * @var string phone regexp
+     */
+    public static $phoneRegexp = '/^(\d{12})$/';
+
     public $password;
 
     /**
@@ -41,6 +56,22 @@ abstract class UserAbstract extends ActiveRecord implements IdentityInterface, O
     public static function setScenarioConfig($value)
     {
         static::$scenarioConfig = $value;
+    }
+
+    /**
+     * @return bool Whether the user is confirmed or not.
+     */
+    public function getIsConfirmed()
+    {
+        return $this->status == static::STATUS_CONFIRMED;
+    }
+
+    /**
+     * @return bool Whether the user is blocked or not.
+     */
+    public function getIsBlocked()
+    {
+        return $this->status == static::STATUS_BLOCKED;
     }
 
     /**

@@ -8,6 +8,7 @@
 
 namespace ddmytruk\user\models\form;
 
+use ddmytruk\user\helpers\Password;
 use ddmytruk\user\traits\ModuleTrait;
 use ddmytruk\user\abstracts\UserAbstract;
 use ddmytruk\user\abstracts\SignInFormAbstract;
@@ -24,6 +25,9 @@ class SignInForm extends SignInFormAbstract
 
     /** @var Finder */
     protected $finder;
+
+    /** @var integer */
+    protected $loginType;
 
     /**
      * @param Finder $finder
@@ -42,7 +46,43 @@ class SignInForm extends SignInFormAbstract
         /** @var $user UserAbstract */
         $user = $this->module->modelMap['User'];
 
-        return $user::rulesForForm(SignInFormAbstract::className());
+        $user::setScenarioConfig($this->module->signInScenarioConfig);
+
+        return $user::rulesForForm(SignInFormAbstract::className(), $user::SIGN_IN_SCENARIO);
+    }
+
+    public function confirmationValidate($attribute) {
+
+        /** @var $user UserAbstract */
+        $user = $this->module->modelMap['User'];
+
+        if ($this->user !== null) {
+
+            $confirmationRequired = true;
+            if($this->loginType == $user::SIGN_IN_EMAIL) {
+                $confirmationRequired = $this->module->enableConfirmationEmail
+                && !$this->module->enableUnconfirmedLogin;
+            } elseif ($this->loginType == $user::SIGN_IN_PHONE) {
+                $confirmationRequired = $this->module->enableConfirmationPhone
+                    && !$this->module->enableUnconfirmedLogin;
+            }
+
+            if ($confirmationRequired && !$this->user->getIsConfirmed()) {
+                $this->addError($attribute, 'You need to confirm your email address');
+            }
+            if ($this->user->getIsBlocked()) {
+                $this->addError($attribute, 'Your account has been blocked');
+            }
+        }
+
+    }
+
+    public function passwordValidate($attribute) {
+
+        if ($this->user === null || !Password::validate($this->password, $this->user->password_hash)) {
+            $this->addError($attribute, 'Invalid login or password');
+        }
+
     }
 
     public function scenarios()
@@ -73,15 +113,9 @@ class SignInForm extends SignInFormAbstract
     public function perform() {
 
         if ($this->validate()) {
-            #$this->user->updateAttributes(['last_sign_in' => new Expression('NOW()')]);
-            #return \Yii::$app->user->login($this->user, $this->rememberMe ? $this->module->rememberFor : 0);
+            $this->user->updateAttributes(['last_sign_in' => new Expression('NOW()')]);
+            return \Yii::$app->user->login($this->user, $this->rememberMe ? $this->module->rememberFor : 0);
         }
-
-        echo "<pre>";
-        print_r($this->module->signInScenario);
-        #print_r($this);
-        echo "</pre>";
-        die;
 
         return false;
 
@@ -91,7 +125,9 @@ class SignInForm extends SignInFormAbstract
     public function beforeValidate()
     {
         if (parent::beforeValidate()) {
-            #$this->user = $this->finder->findUserByUsernameOrEmail(trim($this->login));
+            $userData = $this->finder->findUserByLogin(trim($this->login), $this->module->signInScenarioConfig);
+            $this->user = $userData['user'];
+            $this->loginType = $userData['loginType'];
 
             return true;
         } else {

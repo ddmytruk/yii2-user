@@ -13,6 +13,7 @@ use ddmytruk\user\events\UserEvent;
 use Yii;
 use yii\base\Model;
 use ddmytruk\user\events\FormEvent;
+use yii\web\IdentityInterface;
 
 trait EventTrait
 {
@@ -27,7 +28,7 @@ trait EventTrait
     }
 
     /**
-     * @param  UserAbstract $user
+     * @param  UserAbstract|IdentityInterface $user
      * @return object the created object (UserEvent or InvalidConfigException)
      * @throws \yii\base\InvalidConfigException
      */

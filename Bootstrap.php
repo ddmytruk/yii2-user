@@ -47,16 +47,17 @@ class Bootstrap implements BootstrapInterface {
                 }
             }
 
+            Yii::$container->setSingleton(Finder::className(), [
+                'userQuery'    => Yii::$container->get('UserQuery'),
+                'tokenQuery'   => Yii::$container->get('TokenQuery'),
+            ]);
+
             Yii::$container->setSingleton(DI::className(), [
                 'signUpForm'    => Yii::$container->get('SignUpForm'),
                 'signInForm'    => Yii::$container->get('SignInForm'),
                 'user' => Yii::$container->get('User')
             ]);
 
-            Yii::$container->setSingleton(Finder::className(), [
-                'userQuery'    => Yii::$container->get('UserQuery'),
-                'tokenQuery'   => Yii::$container->get('TokenQuery'),
-            ]);
 
             Yii::$container->set('ddmytruk\user\Mailer', $module->mailer);
         }

@@ -9,13 +9,18 @@
 namespace ddmytruk\user;
 
 
+use ddmytruk\user\abstracts\UserAbstract;
 use ddmytruk\user\models\orm\Token;
+use ddmytruk\user\models\orm\User;
+use ddmytruk\user\traits\ModuleTrait;
 use yii\base\Object;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 class Finder extends Object
 {
+
+    use ModuleTrait;
 
     /**
      * @var ActiveQuery
@@ -106,7 +111,7 @@ class Finder extends Object
      *
      * @param string $username Username to be used on search.
      *
-     * @return ActiveRecord
+     * @return abstracts\UserAbstract|ActiveRecord
      */
     public function findUserByUsername($username)
     {
@@ -118,7 +123,7 @@ class Finder extends Object
      *
      * @param string $email Email to be used on search.
      *
-     * @return ActiveRecord
+     * @return abstracts\UserAbstract|ActiveRecord
      */
     public function findUserByEmail($email)
     {
@@ -130,12 +135,63 @@ class Finder extends Object
      *
      * @param string $phone Phone to be used on search.
      *
-     * @return ActiveRecord
+     * @return abstracts\UserAbstract|ActiveRecord
      */
     public function findUserByPhone($phone)
     {
         return $this->findUser(['phone' => $phone])->one();
     }
+
+    /**
+     * Finds a user by the given username or email.
+     *
+     * @param string $usernameOrEmail Username or email to be used on search.
+     *
+     * @return ['data' => abstracts\UserAbstract, 'loginType' => const SIGN_IN_]
+     */
+
+    public function findUserByLogin($login, $scenarioConfig)
+    {
+
+        /** @var $user UserAbstract */
+        $user = $this->module->modelMap['User'];
+
+        if (in_array($user::SIGN_IN_EMAIL, $scenarioConfig) && filter_var($login, FILTER_VALIDATE_EMAIL)) {
+            return [
+                'user' => $this->findUserByEmail($login),
+                'loginType' => $user::SIGN_IN_EMAIL
+            ];
+        } elseif (in_array($user::SIGN_IN_USERNAME, $scenarioConfig) && $this->isUserName($login)) {
+            return [
+                'user' => $this->findUserByUsername($login),
+                'loginType' => $user::SIGN_IN_USERNAME
+            ];
+        } elseif (in_array($user::SIGN_IN_PHONE, $scenarioConfig) &&  $this->isPhone($login)) {
+            return [
+                'user' => $this->findUserByPhone($login),
+                'loginType' => $user::SIGN_IN_PHONE
+            ];
+        } else {
+            return null;
+        }
+    }
+
+    private function isUserName($login) {
+        preg_match(UserAbstract::$usernameRegexp, $login, $matches, PREG_OFFSET_CAPTURE);
+        if(count($matches))
+            return true;
+        else
+            return false;
+    }
+
+    private function isPhone($login) {
+        preg_match(UserAbstract::$phoneRegexp, $login, $matches, PREG_OFFSET_CAPTURE);
+        if(count($matches))
+            return true;
+        else
+            return false;
+    }
+
 
     /**
      * Finds a user by the given condition.

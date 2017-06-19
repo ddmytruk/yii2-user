@@ -43,25 +43,11 @@ class User extends UserAbstract
 {
     use ModuleTrait;
 
-    const STATUS_CONFIRMED = 10;
-    const STATUS_BLOCKED = 1;
-    const STATUS_UN_CONFIRMED = 0;
-
     const BEFORE_SIGN_UP = 'beforeSignUp';
     const AFTER_SIGN_UP  = 'afterSignUp';
 
     const BEFORE_CONFIRM  = 'beforeConfirm';
     const AFTER_CONFIRM   = 'afterConfirm';
-
-    /**
-     * @var string username regexp
-     */
-    public static $usernameRegexp = '/^[-a-zA-Z]+$/';
-
-    /**
-     * @var string phone regexp
-     */
-    public static $phoneRegexp = '/^(\d{12})$/';
 
     /**
      * @return object an instance of the requested class. (Mailer)
@@ -261,7 +247,12 @@ class User extends UserAbstract
             #var_dump($this->module->signInScenario);
 
             $result = [
+                'loginRequired' => ['login', 'required', 'on' => $scenario],
+                'loginTrim' => ['login', 'trim'],
+                'confirmationValidate' => ['login', 'confirmationValidate'],
 
+                'requiredFields' => [['login', 'password'], 'required'],
+                'passwordValidate' => ['password', 'passwordValidate'],
 
                 'rememberMe' => ['rememberMe', 'boolean'],
             ];
@@ -272,8 +263,8 @@ class User extends UserAbstract
     }
 
     /** @inheritdoc */
-    public function beforeSave($insert)
-    {
+    public function beforeSave($insert) {
+
         if ($insert) {
             $this->setAttribute('auth_key', \Yii::$app->security->generateRandomString());
             if (\Yii::$app instanceof WebApplication) {
@@ -286,6 +277,7 @@ class User extends UserAbstract
         }
 
         return parent::beforeSave($insert);
+
     }
 
     /**
@@ -300,14 +292,18 @@ class User extends UserAbstract
 
             $this->trigger(static::BEFORE_SIGN_UP);
 
+            $this->status = static::STATUS_UN_CONFIRMED;
+
             if (!$this->save()) {
                 $transaction->rollBack();
                 return false;
             }
 
-            /** @var Token $token */
-            $token = \Yii::createObject(['class' => Token::className(), 'type' => Token::TYPE_CONFIRMATION]);
-            $token->link('user', $this);
+            if ($this->module->enableConfirmationEmail) {
+                /** @var Token $token */
+                $token = \Yii::createObject(['class' => Token::className(), 'type' => Token::TYPE_CONFIRMATION]);
+                $token->link('user', $this);
+            }
 
             $this->mailer->sendWelcomeMessage($this, isset($token) ? $token : null);
 
@@ -359,22 +355,6 @@ class User extends UserAbstract
                 'value' => new Expression('NOW()'),
             ],
         ];
-    }
-
-    /**
-     * @return bool Whether the user is confirmed or not.
-     */
-    public function getIsConfirmed()
-    {
-        return $this->status == static::STATUS_CONFIRMED;
-    }
-
-    /**
-     * @return bool Whether the user is blocked or not.
-     */
-    public function getIsBlocked()
-    {
-        return $this->status == static::STATUS_BLOCKED;
     }
 
     /**

@@ -58,6 +58,18 @@ class SecurityController extends CommonController
      */
     const EVENT_AFTER_CONFIRM = 'afterConfirm';
 
+    /**
+     * Event is triggered before logging user out.
+     * Triggered with \ddmytruk\user\events\UserEvent.
+     */
+    const EVENT_BEFORE_LOGOUT = 'beforeLogout';
+
+    /**
+     * Event is triggered after logging user out.
+     * Triggered with \ddmytruk\user\events\UserEvent.
+     */
+    const EVENT_AFTER_LOGOUT = 'afterLogout';
+
 
     public function actionSignUp() {
 
@@ -69,10 +81,6 @@ class SecurityController extends CommonController
 
         $model->setScenario($user::SIGN_UP_SCENARIO);
 
-        #$this->layout = false;
-//        var_dump($model->rules());
-//        var_dump($model->getScenario());
-//        die;
         $event = $this->getFormEvent($model);
 
         $this->performAjaxValidation($model);
@@ -105,7 +113,12 @@ class SecurityController extends CommonController
 
         /** @var $model SignUpFormAbstract */
         $model = $this->di->getSignInForm();
-        #$model->setScenario($this->module->signInScenario);
+
+        /** @var $user UserAbstract */
+        $user = $this->module->modelMap['User'];
+
+        $model->setScenario($user::SIGN_IN_SCENARIO);
+
         $event = $this->getFormEvent($model);
 
         $this->performAjaxValidation($model);
@@ -125,6 +138,24 @@ class SecurityController extends CommonController
             'model'  => $model,
         ]);
 
+    }
+
+    /**
+     * Logs the user out and then redirects to the homepage.
+     *
+     * @return Response
+     */
+    public function actionLogout()
+    {
+        $event = $this->getUserEvent(\Yii::$app->user->identity);
+
+        $this->trigger(self::EVENT_BEFORE_LOGOUT, $event);
+
+        \Yii::$app->user->logout();
+
+        $this->trigger(self::EVENT_AFTER_LOGOUT, $event);
+
+        return $this->goHome();
     }
 
     /**
