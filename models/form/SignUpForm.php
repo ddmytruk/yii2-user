@@ -51,9 +51,10 @@ class SignUpForm extends SignUpFormAbstract
     public function attributeLabels()
     {
         return [
-            'email'    => 'Email',
-            'username' => 'Username',
-            'password' => 'Password',
+            'email'     => \Yii::t('user', 'Email'),
+            'phone'     => \Yii::t('user', 'Phone'),
+            'username'  => \Yii::t('user', 'Username'),
+            'password'  => \Yii::t('user', 'Password'),
         ];
     }
 

@@ -9,7 +9,7 @@ use yii\widgets\ActiveForm;
  * @var \ddmytruk\user\Module $module
  */
 
-$this->title = 'Sign in';
+$this->title = Yii::t('user', 'Sign in');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
@@ -30,7 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <?= $form->field($model, 'password')->passwordInput() ?>
 
-        <?= Html::submitButton('Sign up', ['class' => 'btn btn-success btn-block']) ?>
+        <?= Html::submitButton(Yii::t('user', 'Sign in'), ['class' => 'btn btn-success btn-block']) ?>
 
         <?php ActiveForm::end(); ?>
 
@@ -39,7 +39,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="col-md-4 col-md-offset-4">
         <?php if($module->enableConfirmationEmail): ?>
             <p class="text-center">
-                <?= Html::a('Didn\'t receive confirmation message?', ['/user/security/resend']) ?>
+                <?= Html::a(Yii::t('user', 'Didn\'t receive confirmation message?'), ['/user/security/resend']) ?>
             </p>
         <?php endif; ?>
     </div>

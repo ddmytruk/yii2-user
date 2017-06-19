@@ -8,7 +8,7 @@ use yii\widgets\ActiveForm;
  * @var \ddmytruk\user\abstracts\SignUpFormAbstract $model
  */
 
-$this->title = 'Sign up';
+$this->title = Yii::t('user', 'Sign up');
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
@@ -31,7 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <?= $form->field($model, 'password')->passwordInput() ?>
 
-        <?= Html::submitButton('Sign up', ['class' => 'btn btn-success btn-block']) ?>
+        <?= Html::submitButton(Yii::t('user', 'Sign up'), ['class' => 'btn btn-success btn-block']) ?>
 
         <?php ActiveForm::end(); ?>
 

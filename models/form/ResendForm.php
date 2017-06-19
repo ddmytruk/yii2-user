@@ -31,7 +31,7 @@ class ResendForm extends ResendFormAbstract
     public function attributeLabels()
     {
         return [
-            'email' => 'Email',
+            'email' => \Yii::t('user', 'Email'),
         ];
     }
 

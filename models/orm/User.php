@@ -186,7 +186,7 @@ class User extends UserAbstract
                     'username',
                     'unique',
                     'targetClass' => get_class(),
-                    'message' => 'This username has already been taken',
+                    'message' => \Yii::t('user', 'This username has already been taken'),
                     'on' => static::getRulesConfigForAttribute('username', $scenario)
                 ],
                 'usernameTrim'     => ['username', 'trim', 'on' =>
@@ -210,7 +210,7 @@ class User extends UserAbstract
                     'email',
                     'unique',
                     'targetClass' => get_class(),
-                    'message' => 'This email address has already been taken',
+                    'message' => \Yii::t('user', 'This email address has already been taken'),
                     'on' => static::getRulesConfigForAttribute('email', $scenario)
                 ],
                 'emailTrim'     => ['email', 'trim', 'on' =>
@@ -230,7 +230,7 @@ class User extends UserAbstract
                     'phone',
                     'unique',
                     'targetClass' => get_class(),
-                    'message' => 'This phone has already been taken',
+                    'message' => \Yii::t('user', 'This phone has already been taken'),
                     'on' => static::getRulesConfigForAttribute('phone', $scenario)
                 ],
                 'phoneTrim'     => ['phone', 'trim', 'on' =>

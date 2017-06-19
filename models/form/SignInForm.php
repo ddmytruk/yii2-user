@@ -68,10 +68,10 @@ class SignInForm extends SignInFormAbstract
             }
 
             if ($confirmationRequired && !$this->user->getIsConfirmed()) {
-                $this->addError($attribute, 'You need to confirm your email address');
+                $this->addError($attribute, \Yii::t('user', 'You need to confirm your email address'));
             }
             if ($this->user->getIsBlocked()) {
-                $this->addError($attribute, 'Your account has been blocked');
+                $this->addError($attribute, \Yii::t('user', 'Your account has been blocked'));
             }
         }
 
@@ -80,7 +80,7 @@ class SignInForm extends SignInFormAbstract
     public function passwordValidate($attribute) {
 
         if ($this->user === null || !Password::validate($this->password, $this->user->password_hash)) {
-            $this->addError($attribute, 'Invalid login or password');
+            $this->addError($attribute, \Yii::t('user', 'Invalid login or password'));
         }
 
     }
@@ -100,8 +100,8 @@ class SignInForm extends SignInFormAbstract
     public function attributeLabels()
     {
         return [
-            'login'    => 'Login',
-            'password' => 'Password',
+            'login'    => \Yii::t('user', 'Login'),
+            'password' => \Yii::t('user', 'Password'),
         ];
     }
 

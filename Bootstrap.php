@@ -10,6 +10,7 @@ namespace ddmytruk\user;
 
 use Yii;
 use yii\base\BootstrapInterface;
+use yii\i18n\PhpMessageSource;
 
 class Bootstrap implements BootstrapInterface {
 
@@ -58,6 +59,15 @@ class Bootstrap implements BootstrapInterface {
                 'user' => Yii::$container->get('User')
             ]);
 
+            if (!isset($app->get('i18n')->translations['user*'])) {
+                $app->get('i18n')->translations['user*'] = [
+                    'class' => PhpMessageSource::className(),
+                    'basePath' => __DIR__ . '/messages',
+                ];
+            }
+
+//            var_dump($app->get('i18n'));
+//            die;
 
             Yii::$container->set('ddmytruk\user\Mailer', $module->mailer);
         }

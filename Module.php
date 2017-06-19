@@ -10,6 +10,7 @@
 namespace ddmytruk\user;
 
 use ddmytruk\user\abstracts\UserAbstract;
+use ddmytruk\user\models\orm\User;
 use yii\base\Module as BaseModule;
 
 class Module extends BaseModule
@@ -19,14 +20,15 @@ class Module extends BaseModule
     /** Default sign up scenario config required username, email, phone */
     public $signUpScenarioConfig = [
         UserAbstract::SIGN_UP_EMAIL,
-        #UserAbstract::SIGN_UP_PHONE,
+        UserAbstract::SIGN_UP_PHONE,
         UserAbstract::SIGN_UP_USERNAME
     ];
 
     /** Default sign in scenario for set required email */
     public $signInScenarioConfig = [
-        #UserAbstract::SIGN_IN_EMAIL,
-        UserAbstract::SIGN_IN_USERNAME
+        UserAbstract::SIGN_IN_EMAIL,
+        UserAbstract::SIGN_IN_USERNAME,
+        UserAbstract::SIGN_IN_PHONE
     ];
 
     /** @var bool Whether user has to confirm email his account. */

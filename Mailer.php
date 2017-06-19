@@ -29,7 +29,7 @@ class Mailer extends MailerAbstract
     public function getWelcomeSubject()
     {
         if ($this->welcomeSubject == null) {
-            $this->setWelcomeSubject('Welcome to '. \Yii::$app->name);
+            $this->setWelcomeSubject(\Yii::t('user', 'Welcome to {0}', \Yii::$app->name));
         }
 
         return $this->welcomeSubject;
@@ -67,7 +67,7 @@ class Mailer extends MailerAbstract
     public function getConfirmationSubject()
     {
         if ($this->confirmationSubject == null) {
-            $this->setConfirmationSubject('Confirm account on ' . \Yii::$app->name);
+            $this->setConfirmationSubject(\Yii::t('user', 'Confirm account on {0}', \Yii::$app->name));
         }
 
         return $this->confirmationSubject;
