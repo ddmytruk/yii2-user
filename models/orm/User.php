@@ -49,6 +49,9 @@ class User extends UserAbstract
     const BEFORE_CONFIRM  = 'beforeConfirm';
     const AFTER_CONFIRM   = 'afterConfirm';
 
+    const BEFORE_CREATE   = 'beforeCreate';
+    const AFTER_CREATE    = 'afterCreate';
+
     /**
      * @return object an instance of the requested class. (Mailer)
      * @throws \yii\base\InvalidConfigException
@@ -153,6 +156,8 @@ class User extends UserAbstract
             $result[static::SIGN_UP_SCENARIO][] = 'phone';
 
         $result[static::SIGN_UP_SCENARIO][] = 'password';
+
+        $result[static::CONNECT_SCENARIO][] = ['username', 'email'];
 
         return $result;
     }
@@ -317,6 +322,45 @@ class User extends UserAbstract
             \Yii::warning($e->getMessage());
             throw $e;
         }
+    }
+
+    /**
+     * Creates new user account. It generates password if it is not provided by user.
+     *
+     * @return bool
+     */
+    public function create() {
+
+        if ($this->getIsNewRecord() == false) {
+            throw new \RuntimeException('Calling "' . __CLASS__ . '::' . __METHOD__ . '" on existing user');
+        }
+
+        $transaction = $this->getDb()->beginTransaction();
+
+        try {
+            $this->password = $this->password == null ? Password::generate(8) : $this->password;
+
+            $this->trigger(self::BEFORE_CREATE);
+
+            if (!$this->save()) {
+                $transaction->rollBack();
+                return false;
+            }
+
+            $this->confirm();
+
+            $this->mailer->sendWelcomeMessage($this, null, true);
+            $this->trigger(self::AFTER_CREATE);
+
+            $transaction->commit();
+
+            return true;
+        } catch (\Exception $e) {
+            $transaction->rollBack();
+            \Yii::warning($e->getMessage());
+            throw $e;
+        }
+
     }
 
 

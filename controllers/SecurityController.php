@@ -13,11 +13,15 @@ use ddmytruk\user\abstracts\ResendFormAbstract;
 use ddmytruk\user\abstracts\SignUpFormAbstract;
 use ddmytruk\user\abstracts\UserAbstract;
 use ddmytruk\user\models\form\ResendForm;
+use ddmytruk\user\models\orm\SocialAccount;
 use ddmytruk\user\traits\EventTrait;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
+use yii\authclient\ClientInterface;
+use yii\authclient\AuthAction;
 
 use ddmytruk\user\components\CommonController;
+use yii\helpers\Url;
 
 /**
  * @property \ddmytruk\user\Module $module
@@ -87,6 +91,30 @@ class SecurityController extends CommonController
      * Triggered with \ddmytruk\user\events\FormEvent.
      */
     const EVENT_AFTER_RESEND = 'afterResend';
+
+    /**
+     * Event is triggered before connecting social network account to user.
+     * Triggered with \ddmytruk\user\events\AuthEvent.
+     */
+    const EVENT_BEFORE_CONNECT = 'beforeConnect';
+
+    /**
+     * Event is triggered before connecting social network account to user.
+     * Triggered with \ddmytruk\user\events\AuthEvent.
+     */
+    const EVENT_AFTER_CONNECT = 'afterConnect';
+
+    /**
+     * Event is triggered before authenticating user via social network.
+     * Triggered with \ddmytruk\user\events\AuthEvent.
+     */
+    const EVENT_BEFORE_AUTHENTICATE = 'beforeAuthenticate';
+
+    /**
+     * Event is triggered after authenticating user via social network.
+     * Triggered with \ddmytruk\user\events\AuthEvent.
+     */
+    const EVENT_AFTER_AUTHENTICATE = 'afterAuthenticate';
 
 
     public function actionSignUp() {
@@ -240,6 +268,84 @@ class SecurityController extends CommonController
         return $this->render($view, [
             'model' => $model,
         ]);
+
+    }
+
+    /**
+     * Displays page where user can create new account that will be connected to social account.
+     *
+     * @param string $code
+     *
+     * @return string
+     * @throws NotFoundHttpException
+     */
+    public function actionSugnUpConnect($code) {
+
+    }
+
+    /**
+     * Tries to connect social account to user.
+     *
+     * @param ClientInterface $client
+     */
+    public function connect(ClientInterface $client)
+    {
+        /** @var SocialAccount $account */
+        $account = \Yii::createObject(SocialAccount::className());
+        $event   = $this->getAuthEvent($account, $client);
+
+        $this->trigger(self::EVENT_BEFORE_CONNECT, $event);
+
+        $account->connectWithUser($client);
+
+        $this->trigger(self::EVENT_AFTER_CONNECT, $event);
+
+        $this->action->successUrl = Url::to(['/user/settings/networks']);
+    }
+
+
+    /** @inheritdoc */
+    public function actions()
+    {
+        return [
+            'auth' => [
+                'class' => AuthAction::className(),
+                'successCallback' => \Yii::$app->user->isGuest
+                    ? [$this, 'authenticate']
+                    : [$this, 'connect'],
+            ],
+        ];
+    }
+    /**
+     * @param ClientInterface $client
+     */
+    public function authenticate(ClientInterface $client) {
+
+        $account = $this->finder->findAccount()->byClient($client)->one();
+
+        if ($account === null) {
+            /** @var SocialAccount $account */
+            $accountObj = \Yii::createObject(SocialAccount::className());
+
+            $account = $accountObj::create($client);
+        }
+
+        $event = $this->getAuthEvent($account, $client);
+
+        $this->trigger(self::EVENT_BEFORE_AUTHENTICATE, $event);
+
+        if ($account->user instanceof UserAbstract) {
+            if ($account->user->isBlocked) {
+                $this->action->successUrl = Url::to(['/user/security/sign-in']);
+            } else {
+                \Yii::$app->user->login($account->user, $this->module->rememberFor);
+                $this->action->successUrl = \Yii::$app->user->getReturnUrl();
+            }
+        } else {
+            $this->action->successUrl = $account->getConnectUrl();
+        }
+
+        $this->trigger(self::EVENT_AFTER_AUTHENTICATE, $event);
 
     }
 }

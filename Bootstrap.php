@@ -18,7 +18,8 @@ class Bootstrap implements BootstrapInterface {
         'SignUpForm' => 'ddmytruk\user\models\form\SignUpForm',
         'SignInForm' => 'ddmytruk\user\models\form\SignInForm',
         'User' => 'ddmytruk\user\models\orm\User',
-        'Token' => 'ddmytruk\user\models\orm\Token'
+        'Token' => 'ddmytruk\user\models\orm\Token',
+        'Account' => 'ddmytruk\user\models\orm\SocialAccount',
     ];
 
     /**
@@ -39,7 +40,7 @@ class Bootstrap implements BootstrapInterface {
                     return Yii::createObject($modelName);
                 });
 
-                if (in_array($name, ['User', 'Token'])) {
+                if (in_array($name, ['User', 'Token', 'Account'])) {
 
                     Yii::$container->set($name . 'Query', function () use ($modelName) {
                         return $modelName::find();
@@ -51,6 +52,7 @@ class Bootstrap implements BootstrapInterface {
             Yii::$container->setSingleton(Finder::className(), [
                 'userQuery'    => Yii::$container->get('UserQuery'),
                 'tokenQuery'   => Yii::$container->get('TokenQuery'),
+                'accountQuery' => Yii::$container->get('AccountQuery'),
             ]);
 
             Yii::$container->setSingleton(DI::className(), [

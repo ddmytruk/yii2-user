@@ -12,6 +12,7 @@ namespace ddmytruk\user;
 use ddmytruk\user\abstracts\UserAbstract;
 use ddmytruk\user\models\orm\Token;
 use ddmytruk\user\models\orm\User;
+use ddmytruk\user\models\query\AccountQuery;
 use ddmytruk\user\traits\ModuleTrait;
 use yii\base\Object;
 use yii\db\ActiveQuery;
@@ -33,6 +34,11 @@ class Finder extends Object
     protected $tokenQuery;
 
     /**
+     * @var AccountQuery
+     */
+    protected $accountQuery;
+
+    /**
      * @return ActiveQuery
      */
     public function getUserQuery()
@@ -49,6 +55,14 @@ class Finder extends Object
     }
 
     /**
+     * @return ActiveQuery
+     */
+    public function getAccountQuery()
+    {
+        return $this->accountQuery;
+    }
+
+    /**
      * @param ActiveQuery $userQuery
      */
     public function setUserQuery(ActiveQuery $userQuery)
@@ -62,6 +76,14 @@ class Finder extends Object
     public function setTokenQuery(ActiveQuery $tokenQuery)
     {
         $this->tokenQuery = $tokenQuery;
+    }
+
+    /**
+     * @param ActiveQuery $accountQuery
+     */
+    public function setAccountQuery(ActiveQuery $accountQuery)
+    {
+        $this->accountQuery = $accountQuery;
     }
 
     /**
@@ -203,6 +225,26 @@ class Finder extends Object
     public function findUser($condition)
     {
         return $this->userQuery->where($condition);
+    }
+
+    /**
+     * @return AccountQuery
+     */
+    public function findAccount()
+    {
+        return $this->accountQuery;
+    }
+
+    /**
+     * Finds an account by id.
+     *
+     * @param int $id
+     *
+     * @return models\orm\SocialAccount|null
+     */
+    public function findAccountById($id)
+    {
+        return $this->accountQuery->where(['id' => $id])->one();
     }
 
 }

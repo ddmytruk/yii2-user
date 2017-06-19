@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use ddmytruk\user\widgets\Connect;
 
 /**
  * @var yii\web\View $this
@@ -42,6 +43,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?= Html::a(Yii::t('user', 'Didn\'t receive confirmation message?'), ['/user/security/resend']) ?>
             </p>
         <?php endif; ?>
+    </div>
+
+    <div class="col-md-4 col-md-offset-4">
+        <?= Connect::widget([
+            'baseAuthUrl' => ['/user/security/auth'],
+        ]) ?>
     </div>
 
 </div>

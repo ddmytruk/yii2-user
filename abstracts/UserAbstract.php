@@ -9,15 +9,23 @@
 namespace ddmytruk\user\abstracts;
 
 use ddmytruk\user\interfaces\ORMInterface;
+use ddmytruk\user\models\orm\SocialAccount;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 use yii\base\NotSupportedException;
+
+/**
+ * Class UserAbstract
+ * @package ddmytruk\user\abstracts
+ * @property SocialAccount[] $accounts
+ */
 
 abstract class UserAbstract extends ActiveRecord implements IdentityInterface, ORMInterface
 {
 
     const SIGN_UP_SCENARIO = 'singUp';
     const SIGN_IN_SCENARIO = 'singIn';
+    const CONNECT_SCENARIO = 'connect';
 
     const SIGN_UP_EMAIL = 'signUpEmail';
     const SIGN_UP_USERNAME = 'signUpUsername';
@@ -78,6 +86,22 @@ abstract class UserAbstract extends ActiveRecord implements IdentityInterface, O
     }
 
     /**
+     * @return SocialAccount[] Connected accounts ($provider => $account)
+     */
+    public function getAccounts()
+    {
+        $connected = [];
+        $accounts  = $this->hasMany($this->module->modelMap['Account'], ['user_id' => 'id'])->all();
+
+        /** @var SocialAccount $account */
+        foreach ($accounts as $account) {
+            $connected[$account->provider] = $account;
+        }
+
+        return $connected;
+    }
+
+    /**
      * Attempts user confirmation.
      *
      * @param string $code Confirmation code.
@@ -85,6 +109,13 @@ abstract class UserAbstract extends ActiveRecord implements IdentityInterface, O
      * @return boolean
      */
     abstract public function attemptConfirmation($code);
+
+    /**
+     * Creates new user account. It generates password if it is not provided by user.
+     *
+     * @return bool
+     */
+    abstract public function create();
 
     /**
      * @inheritdoc
