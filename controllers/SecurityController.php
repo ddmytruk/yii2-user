@@ -9,13 +9,19 @@
 namespace ddmytruk\user\controllers;
 
 use ddmytruk\traits\AjaxValidationTrait;
+use ddmytruk\user\abstracts\ResendFormAbstract;
 use ddmytruk\user\abstracts\SignUpFormAbstract;
 use ddmytruk\user\abstracts\UserAbstract;
+use ddmytruk\user\models\form\ResendForm;
 use ddmytruk\user\traits\EventTrait;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 
 use ddmytruk\user\components\CommonController;
+
+/**
+ * @property \ddmytruk\user\Module $module
+ */
 
 class SecurityController extends CommonController
 {
@@ -70,6 +76,18 @@ class SecurityController extends CommonController
      */
     const EVENT_AFTER_LOGOUT = 'afterLogout';
 
+    /**
+     * Event is triggered after creating ResendForm class.
+     * Triggered with \ddmytruk\user\events\FormEvent.
+     */
+    const EVENT_BEFORE_RESEND = 'beforeResend';
+
+    /**
+     * Event is triggered after successful resending of confirmation email.
+     * Triggered with \ddmytruk\user\events\FormEvent.
+     */
+    const EVENT_AFTER_RESEND = 'afterResend';
+
 
     public function actionSignUp() {
 
@@ -96,7 +114,8 @@ class SecurityController extends CommonController
         $view = $model->getViewPath() ? $model->getViewPath() : 'sign-up';
 
         return $this->render($view, [
-            'model' => $model
+            'model' => $model,
+            'module' => $this->module,
         ]);
 
     }
@@ -136,6 +155,7 @@ class SecurityController extends CommonController
 
         return $this->render($view, [
             'model'  => $model,
+            'module' => $this->module,
         ]);
 
     }
@@ -145,8 +165,7 @@ class SecurityController extends CommonController
      *
      * @return Response
      */
-    public function actionLogout()
-    {
+    public function actionLogout() {
         $event = $this->getUserEvent(\Yii::$app->user->identity);
 
         $this->trigger(self::EVENT_BEFORE_LOGOUT, $event);
@@ -187,6 +206,39 @@ class SecurityController extends CommonController
 
         return $this->render('/message', [
             'title'  => 'Account confirmation',
+        ]);
+
+    }
+
+    /**
+     * Displays page where user can request new confirmation token. If resending was successful, displays message.
+     *
+     * @return string
+     * @throws \yii\web\HttpException
+     */
+    public function actionResend() {
+
+        if ($this->module->enableConfirmationEmail == false) {
+            throw new NotFoundHttpException();
+        }
+
+        /** @var ResendFormAbstract $model */
+        $model = \Yii::createObject(ResendForm::className());
+        $event = $this->getFormEvent($model);
+
+        $this->trigger(self::EVENT_BEFORE_RESEND, $event);
+
+        $this->performAjaxValidation($model);
+
+        if ($model->load(\Yii::$app->request->post()) && $model->perform()) {
+
+
+        }
+
+        $view = $model->getViewPath() ? $model->getViewPath() : 'resend';
+
+        return $this->render($view, [
+            'model' => $model,
         ]);
 
     }

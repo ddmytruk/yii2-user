@@ -1,12 +1,12 @@
 # Установка Yii2-user
 
-### 1. Download
+### 1. composer.json
 
 ```bash
 "ddmytruk/yii2-user": "@dev"
 ```
 
-### 2. Configure
+### 2. Подключение модуля
 
 > **NOTE:** Не должно быть другово модуля "user".
 
@@ -20,7 +20,7 @@
 ],
 ```
 
-### 3. Database schema
+### 3. База даных
 
 ```bash
 $ php yii migrate/up --migrationPath=@vendor/ddmytruk/yii2-user/migrations

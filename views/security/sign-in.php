@@ -6,6 +6,7 @@ use yii\widgets\ActiveForm;
 /**
  * @var yii\web\View $this
  * @var \ddmytruk\user\abstracts\SignInFormAbstract $model
+ * @var \ddmytruk\user\Module $module
  */
 
 $this->title = 'Sign in';
@@ -33,6 +34,14 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <?php ActiveForm::end(); ?>
 
+    </div>
+
+    <div class="col-md-4 col-md-offset-4">
+        <?php if($module->enableConfirmationEmail): ?>
+            <p class="text-center">
+                <?= Html::a('Didn\'t receive confirmation message?', ['/user/security/resend']) ?>
+            </p>
+        <?php endif; ?>
     </div>
 
 </div>

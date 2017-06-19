@@ -20,6 +20,9 @@ class Mailer extends MailerAbstract
     /** @var string */
     protected $welcomeSubject;
 
+    /** @var string */
+    protected $confirmationSubject;
+
     /**
      * @return string
      */
@@ -38,6 +41,44 @@ class Mailer extends MailerAbstract
     public function setWelcomeSubject($welcomeSubject)
     {
         $this->welcomeSubject = $welcomeSubject;
+    }
+
+    /**
+     * Sends an email to a user with confirmation link.
+     *
+     * @param UserAbstract  $user
+     * @param Token $token
+     *
+     * @return bool
+     */
+    public function sendConfirmationMessage(UserAbstract $user, Token $token)
+    {
+        return $this->sendMessage(
+            $user->email,
+            $this->getConfirmationSubject(),
+            'confirmation',
+            ['user' => $user, 'token' => $token]
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function getConfirmationSubject()
+    {
+        if ($this->confirmationSubject == null) {
+            $this->setConfirmationSubject('Confirm account on ' . \Yii::$app->name);
+        }
+
+        return $this->confirmationSubject;
+    }
+
+    /**
+     * @param string $confirmationSubject
+     */
+    public function setConfirmationSubject($confirmationSubject)
+    {
+        $this->confirmationSubject = $confirmationSubject;
     }
 
     /**

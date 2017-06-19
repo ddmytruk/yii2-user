@@ -43,12 +43,15 @@ abstract class UserAbstract extends ActiveRecord implements IdentityInterface, O
      */
     public static $phoneRegexp = '/^(\d{12})$/';
 
+    /**
+     * @var string Password
+     */
     public $password;
 
     /**
      * @var string[] scenario config array
      */
-    public static $scenarioConfig;
+    public static $scenarioConfig = [];
 
     /**
      * @param string[] $value scenario config array.
