@@ -12,6 +12,9 @@ namespace ddmytruk\user;
 use ddmytruk\user\abstracts\SignInFormAbstract;
 use ddmytruk\user\abstracts\SignUpFormAbstract;
 use ddmytruk\user\abstracts\UserAbstract;
+use ddmytruk\user\models\form\RecoveryForm;
+use ddmytruk\user\models\form\ResendForm;
+use ddmytruk\user\models\form\ResetPasswordForm;
 use yii\base\Object;
 
 class DI extends Object
@@ -25,6 +28,21 @@ class DI extends Object
      * @var SignInFormAbstract
      */
     protected $signInForm;
+
+    /**
+     * @var  RecoveryForm
+     */
+    protected $recoveryForm;
+
+    /**
+     * @var  ResendForm
+     */
+    protected $resendForm;
+
+    /**
+     * @var  ResetPasswordForm
+     */
+    protected $resetPasswordForm;
 
     /**
      * @return SignUpFormAbstract
@@ -57,6 +75,56 @@ class DI extends Object
     {
         $this->signUpForm = $signUpForm;
     }
+
+    /**
+     * @param RecoveryForm $recoveryForm
+     */
+    public function setRecoveryForm(RecoveryForm $recoveryForm)
+    {
+        $this->recoveryForm = $recoveryForm;
+    }
+
+    /**
+     * @param ResendForm $resendForm
+     */
+    public function setResendForm(ResendForm $resendForm)
+    {
+        $this->resendForm = $resendForm;
+    }
+
+    /**
+     * @param ResetPasswordForm $resetPasswordForm
+     */
+    public function setResetPasswordForm(ResetPasswordForm $resetPasswordForm)
+    {
+        $this->resetPasswordForm = $resetPasswordForm;
+    }
+
+    /**
+     * @return RecoveryForm
+     */
+    public function getRecoveryForm()
+    {
+        return $this->recoveryForm;
+    }
+
+    /**
+     * @return ResendForm
+     */
+    public function getResendForm()
+    {
+        return $this->resendForm;
+    }
+
+    /**
+     * @return ResetPasswordForm
+     */
+    public function getResetPasswordForm()
+    {
+        return $this->resetPasswordForm;
+    }
+
+
 
     /**
      * @var UserAbstract

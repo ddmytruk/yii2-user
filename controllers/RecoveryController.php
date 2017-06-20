@@ -72,9 +72,7 @@ class RecoveryController extends CommonController {
     public function actionRequest() {
 
         /** @var RecoveryForm $model */
-        $model = \Yii::createObject([
-            'class'    => RecoveryForm::className(),
-        ]);
+        $model = $this->di->getRecoveryForm();
 
         $event = $this->getFormEvent($model);
 
@@ -121,9 +119,7 @@ class RecoveryController extends CommonController {
         }
 
         /** @var RecoveryFormAbstract $model */
-        $model = \Yii::createObject([
-            'class'    => ResetPasswordForm::className(),
-        ]);
+        $model = $this->di->getResetPasswordForm();
 
         $event->setForm($model);
 

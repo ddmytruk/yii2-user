@@ -251,7 +251,7 @@ class SecurityController extends CommonController
         }
 
         /** @var ResendFormAbstract $model */
-        $model = \Yii::createObject(ResendForm::className());
+        $model = $this->di->getResendForm();
         $event = $this->getFormEvent($model);
 
         $this->trigger(self::EVENT_BEFORE_RESEND, $event);
@@ -261,7 +261,7 @@ class SecurityController extends CommonController
         if ($model->load(\Yii::$app->request->post()) && $model->perform()) {
 
             $this->trigger(self::EVENT_AFTER_RESEND, $event);
-            
+
         }
 
         $view = $model->getViewPath() ? $model->getViewPath() : 'resend';

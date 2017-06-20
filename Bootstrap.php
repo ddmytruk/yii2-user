@@ -20,6 +20,9 @@ class Bootstrap implements BootstrapInterface {
         'User' => 'ddmytruk\user\models\orm\User',
         'Token' => 'ddmytruk\user\models\orm\Token',
         'Account' => 'ddmytruk\user\models\orm\SocialAccount',
+        'RecoveryForm' => 'ddmytruk\user\models\form\RecoveryForm',
+        'ResendForm' => 'ddmytruk\user\models\form\ResendForm',
+        'ResetPasswordForm' => 'ddmytruk\user\models\form\ResetPasswordForm',
     ];
 
     /**
@@ -56,8 +59,11 @@ class Bootstrap implements BootstrapInterface {
             ]);
 
             Yii::$container->setSingleton(DI::className(), [
-                'signUpForm'    => Yii::$container->get('SignUpForm'),
-                'signInForm'    => Yii::$container->get('SignInForm'),
+                'signUpForm'        => Yii::$container->get('SignUpForm'),
+                'signInForm'        => Yii::$container->get('SignInForm'),
+                'RecoveryForm'      => Yii::$container->get('RecoveryForm'),
+                'ResendForm'        => Yii::$container->get('ResendForm'),
+                'ResetPasswordForm' => Yii::$container->get('ResetPasswordForm'),
                 'user' => Yii::$container->get('User')
             ]);
 
