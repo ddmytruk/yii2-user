@@ -23,6 +23,9 @@ class Mailer extends MailerAbstract
     /** @var string */
     protected $confirmationSubject;
 
+    /** @var string */
+    protected $recoverySubject;
+
     /**
      * @return string
      */
@@ -79,6 +82,44 @@ class Mailer extends MailerAbstract
     public function setConfirmationSubject($confirmationSubject)
     {
         $this->confirmationSubject = $confirmationSubject;
+    }
+
+    /**
+     * @param string $recoverySubject
+     */
+    public function setRecoverySubject($recoverySubject)
+    {
+        $this->recoverySubject = $recoverySubject;
+    }
+
+    /**
+     * Sends an email to a user with recovery link.
+     *
+     * @param UserAbstract  $user
+     * @param Token $token
+     *
+     * @return bool
+     */
+    public function sendRecoveryMessage(UserAbstract $user, Token $token)
+    {
+        return $this->sendMessage(
+            $user->email,
+            $this->getRecoverySubject(),
+            'recovery',
+            ['user' => $user, 'token' => $token]
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function getRecoverySubject()
+    {
+        if ($this->recoverySubject == null) {
+            $this->setRecoverySubject(\Yii::t('user', 'Complete password reset on {0}', \Yii::$app->name));
+        }
+
+        return $this->recoverySubject;
     }
 
     /**

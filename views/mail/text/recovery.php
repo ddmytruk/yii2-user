@@ -14,10 +14,11 @@
  * @var ddmytruk\user\models\orm\Token  $token
  */
 ?>
+
 <?= Yii::t('user', 'Hello') ?>,
 
-<?= Yii::t('user', 'Thank you for signing up on {0}', Yii::$app->name) ?>.
-<?= Yii::t('user', 'In order to complete your registration, please click the link below') ?>.
+<?= Yii::t('user', 'We have received a request to reset the password for your account on {0}', Yii::$app->name) ?>.
+<?= Yii::t('user', 'Please click the link below to complete your password reset') ?>.
 
 <?= $token->url ?>
 

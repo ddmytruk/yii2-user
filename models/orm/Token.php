@@ -31,6 +31,7 @@ class Token extends \yii\db\ActiveRecord
     use ModuleTrait;
 
     const TYPE_CONFIRMATION      = 0;
+    const TYPE_RECOVERY          = 1;
 
     /** @inheritdoc */
     public function beforeSave($insert)
@@ -53,6 +54,9 @@ class Token extends \yii\db\ActiveRecord
             case self::TYPE_CONFIRMATION:
                 $route = '/user/security/confirm';
                 break;
+            case self::TYPE_RECOVERY:
+                $route = '/user/recovery/reset';
+                break;
             default:
                 throw new \RuntimeException();
         }
@@ -68,6 +72,9 @@ class Token extends \yii\db\ActiveRecord
         switch ($this->type) {
             case self::TYPE_CONFIRMATION:
                 $expirationTime = 'PT'.$this->module->confirmWithin.'S';
+                break;
+            case self::TYPE_RECOVERY:
+                $expirationTime = 'PT'.$this->module->recoverWithin.'S';
                 break;
             default:
                 throw new \RuntimeException();

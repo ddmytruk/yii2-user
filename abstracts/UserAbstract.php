@@ -8,6 +8,7 @@
 
 namespace ddmytruk\user\abstracts;
 
+use ddmytruk\user\helpers\Password;
 use ddmytruk\user\interfaces\ORMInterface;
 use ddmytruk\user\models\orm\SocialAccount;
 use yii\db\ActiveRecord;
@@ -67,6 +68,18 @@ abstract class UserAbstract extends ActiveRecord implements IdentityInterface, O
     public static function setScenarioConfig($value)
     {
         static::$scenarioConfig = $value;
+    }
+
+    /**
+     * Resets password.
+     *
+     * @param string $password
+     *
+     * @return bool
+     */
+    public function resetPassword($password)
+    {
+        return (bool)$this->updateAttributes(['password_hash' => Password::hash($password)]);
     }
 
     /**

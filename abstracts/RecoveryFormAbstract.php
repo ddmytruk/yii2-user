@@ -2,28 +2,39 @@
 /**
  * Created by PhpStorm.
  * User: dmytrodmytruk
- * Date: 19.06.17
- * Time: 12:27
+ * Date: 20.06.17
+ * Time: 14:10
  */
+
 namespace ddmytruk\user\abstracts;
-use ddmytruk\user\Finder;
+
+use yii\base\Model;
 use ddmytruk\user\interfaces\FormInterface;
 use ddmytruk\user\Mailer;
-use yii\base\Model;
-abstract class ResendFormAbstract extends Model implements FormInterface
-{
+use ddmytruk\user\Finder;
+
+abstract class RecoveryFormAbstract extends Model implements FormInterface {
+
     /**
      * @var string
      */
     public $email;
+
+    /**
+     * @var string
+     */
+    public $password;
+
     /**
      * @var Mailer
      */
     protected $mailer;
+
     /**
      * @var Finder
      */
     protected $finder;
+
     /**
      * @param Mailer $mailer
      * @param Finder $finder
@@ -35,7 +46,9 @@ abstract class ResendFormAbstract extends Model implements FormInterface
         $this->finder = $finder;
         parent::__construct($config);
     }
+
     public function getViewPath() {
         return false;
     }
+
 }

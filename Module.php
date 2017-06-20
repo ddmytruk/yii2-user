@@ -46,6 +46,9 @@ class Module extends BaseModule
     /** @var int The time before a confirmation token becomes invalid. */
     public $confirmWithin = 86400; // 24 hours
 
+    /** @var int The time before a recovery token becomes invalid. */
+    public $recoverWithin = 21600; // 6 hours
+
     /** @var int The time you want the user will be remembered without asking for credentials. */
     public $rememberFor = 1209600; // two weeks
 

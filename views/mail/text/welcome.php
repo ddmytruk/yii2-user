@@ -15,18 +15,16 @@
  * @var \ddmytruk\user\abstracts\SignUpFormAbstract $model
  */
 ?>
-Hello,
+<?= Yii::t('user', 'Hello') ?>,
 
-Your account on has been created <?= Yii::$app->name ?>.
-
-    We have generated a password for you
+<?= Yii::t('user', 'Your account on {0} has been created', Yii::$app->name) ?>.
 
 <?php if ($token !== null): ?>
-    In order to complete your registration, please click the link below.
+    <?= Yii::t('user', 'In order to complete your registration, please click the link below') ?>.
 
     <?= $token->url ?>
 
-    If you cannot click the link, please try pasting the text into your browser.
+    <?= Yii::t('user', 'If you cannot click the link, please try pasting the text into your browser') ?>.
 <?php endif ?>
 
-If you did not make this request you can ignore this email.
+<?= Yii::t('user', 'If you did not make this request you can ignore this email') ?>.

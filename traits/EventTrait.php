@@ -8,11 +8,14 @@
 
 namespace ddmytruk\user\traits;
 
+use ddmytruk\user\abstracts\RecoveryFormAbstract;
 use ddmytruk\user\abstracts\UserAbstract;
 use ddmytruk\user\events\ConnectEvent;
 use ddmytruk\user\events\UserEvent;
 use ddmytruk\user\events\AuthEvent;
 use ddmytruk\user\models\orm\SocialAccount;
+use ddmytruk\user\models\orm\Token;
+use ddmytruk\user\events\ResetPasswordEvent;
 use Yii;
 use yii\base\Model;
 use ddmytruk\user\events\FormEvent;
@@ -61,5 +64,16 @@ trait EventTrait
     protected function getConnectEvent(SocialAccount $account, UserAbstract $user)
     {
         return \Yii::createObject(['class' => ConnectEvent::className(), 'account' => $account, 'user' => $user]);
+    }
+
+    /**
+     * @param  Token        $token
+     * @param  RecoveryFormAbstract $form
+     * @return object the created object (ResetPasswordEvent or InvalidConfigException)
+     * @throws \yii\base\InvalidConfigException
+     */
+    protected function getResetPasswordEvent(Token $token = null, RecoveryFormAbstract $form = null)
+    {
+        return \Yii::createObject(['class' => ResetPasswordEvent::className(), 'token' => $token, 'form' => $form]);
     }
 }
