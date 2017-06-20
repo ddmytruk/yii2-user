@@ -260,7 +260,8 @@ class SecurityController extends CommonController
 
         if ($model->load(\Yii::$app->request->post()) && $model->perform()) {
 
-
+            $this->trigger(self::EVENT_AFTER_RESEND, $event);
+            
         }
 
         $view = $model->getViewPath() ? $model->getViewPath() : 'resend';
