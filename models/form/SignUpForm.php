@@ -70,7 +70,7 @@ class SignUpForm extends SignUpFormAbstract
         }
 
         /** @var User $user */
-        $user = \Yii::createObject(User::className());
+        $user = \Yii::createObject($this->module->modelMap['User']);
         $user->setScenario($this->getScenario());
         $this->loadAttributes($user);
 

@@ -29,7 +29,7 @@ return [
     'If you did not make this request you can ignore this email' => 'P.S. Якщо ви отримали це повідомлення про помилку, просто видаліть його',
 
     'Thank you for signing up on {0}' => 'Дякуємо за регістрацію на {0}',
-    'In order to complete your registration, please click the link below' => 'Чтобы завершить регистрацию, нажмите на ссылку ниже',
+    'In order to complete your registration, please click the link below' => 'Щоб завершити реєстрацію, натисніть на посилання нижче',
 
     'Your account on {0} has been created' => 'Ваш аккаунт на сайті "{0}" був успешно створений',
     'We have generated a password for you' => 'Ми створили для вас пароль',
