@@ -15,8 +15,8 @@ class m170619_144234_create_social_account_table extends Migration
         $this->createTable('social_account', [
             'id' => $this->primaryKey(),
             'user_id'    => $this->integer()->null(),
-            'provider'   => $this->string()->notNull(),
-            'client_id'  => $this->string()->notNull(),
+            'provider'   => $this->string(255)->notNull(),
+            'client_id'  => $this->string(255)->notNull(),
             'data' => $this->text()->null(),
             'code' => $this->string(32)->null(),
             'email' => $this->string()->null(),
@@ -25,7 +25,7 @@ class m170619_144234_create_social_account_table extends Migration
             'updated_at' => $this->dateTime()->notNull(),
         ]);
 
-        $this->createIndex('{{%account_unique}}', '{{%social_account}}', ['provider', 'client_id', 'code'], true);
+        #$this->createIndex('{{%account_unique}}', '{{%social_account}}', ['provider', 'client_id', 'code'], true);
 
         $this->addForeignKey('{{%fk_user_account}}', '{{%social_account}}', 'user_id', '{{%user}}', 'id');
     }
