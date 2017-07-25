@@ -17,6 +17,8 @@ use yii\authclient\clients\Google as BaseGoogle;
  */
 class Google extends BaseGoogle implements ClientInterface {
 
+    public $buttonContent;
+
     /** @inheritdoc */
     public function getEmail()
     {

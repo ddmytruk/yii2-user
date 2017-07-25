@@ -19,6 +19,9 @@ use yii\authclient\clients\VKontakte as BaseVKontakte;
 
 class VKontakte extends BaseVKontakte implements ClientInterface
 {
+
+    public $buttonContent;
+
     /** @inheritdoc */
     public $scope = 'email';
 

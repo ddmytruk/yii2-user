@@ -18,6 +18,8 @@ use yii\authclient\clients\Yandex as BaseYandex;
  */
 class Yandex extends BaseYandex implements ClientInterface {
 
+    public $buttonContent;
+
     /** @inheritdoc */
     public function getEmail()
     {

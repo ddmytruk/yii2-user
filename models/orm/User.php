@@ -449,4 +449,20 @@ class User extends UserAbstract
         return '{{%user}}';
     }
 
+    /**
+     * @return SocialAccount[] Connected accounts ($provider => $account)
+     */
+    public function getAccounts()
+    {
+        $connected = [];
+        $accounts  = $this->hasMany($this->module->modelMap['Account'], ['user_id' => 'id'])->all();
+
+        /** @var SocialAccount $account */
+        foreach ($accounts as $account) {
+            $connected[$account->provider] = $account;
+        }
+
+        return $connected;
+    }
+
 }
