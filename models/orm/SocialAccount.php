@@ -192,7 +192,7 @@ class SocialAccount extends ActiveRecord
 
         /** @var UserAbstract $user */
         $user = \Yii::createObject([
-            'class'    => User::className(),
+            'class'    => \Yii::$app->getModule('user')->modelMap['User'],
             'scenario' => 'connect',
             'username' => $account->username,
             'email'    => $account->email,
